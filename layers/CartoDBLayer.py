@@ -79,7 +79,7 @@ class CartoDBLayer(QgsVectorLayer):
         self.beforeCommitChanges.connect(self._beforeCommitChanges)
 
     def _loadData(self, sql, geoJSON=None, spatiaLite=None):
-        QgsMessageLog.logMessage('CartoDBLayer.py CartoDBLayer _loadData() got SQL: ' + sql)
+        QgsMessageLog.logMessage('CartoDBLayer.py CartoDBLayer _loadData() got SQL: ' + sql, 'CartoDB Plugin', QgsMessageLog.INFO)
 
         readonly = True
         if spatiaLite is None:
@@ -225,7 +225,7 @@ class CartoDBLayer(QgsVectorLayer):
     def _updateAttributes(self, changedAttributeValues):
         provider = self.dataProvider()
         for featureID, v in changedAttributeValues.iteritems():
-            QgsMessageLog.logMessage('Update attributes for feature ID: ' + str(featureID), 'CartoDB Plugin', QgsMessageLog.INFO)
+            QgsMessageLog.logMessage('CartoDBLayer.py _updateAttributes() featureID: ' + str(featureID), 'CartoDB Plugin', QgsMessageLog.INFO)
             sql = "UPDATE " + self._schema() + self.cartoTable + " SET "
             request = QgsFeatureRequest().setFilterFid(featureID)
             try:
@@ -263,7 +263,7 @@ class CartoDBLayer(QgsVectorLayer):
 
     def _updateGeometries(self, changedGeometries):
         for featureID, geom in changedGeometries.iteritems():
-            QgsMessageLog.logMessage('Update geometry for feature ID: ' + str(featureID), 'CartoDB Plugin', QgsMessageLog.INFO)
+            QgsMessageLog.logMessage('CartoDBLayer.py _updateGeometries() featureID: ' + str(featureID), 'CartoDB Plugin', QgsMessageLog.INFO)
             request = QgsFeatureRequest().setFilterFid(featureID)
             try:
                 sql = "UPDATE " + self._schema() + self.cartoTable + " SET the_geom = "
@@ -275,7 +275,7 @@ class CartoDBLayer(QgsVectorLayer):
                 if isinstance(res, dict) and res['total_rows'] == 1:
                     self.iface.messageBar().pushMessage('Info',
                                                         'Geometry for cartodb_id ' + str(feature['cartodb_id']) +
-                                                        ' was updated from ' + str(self.cartoTable) + ' at CartoDB servers',
+                                                        ' was updated from ' + str(self.cartoTable),
                                                         level=self.iface.messageBar().INFO, duration=10)
 
             except StopIteration:
@@ -284,7 +284,7 @@ class CartoDBLayer(QgsVectorLayer):
 
     def _addFeatures(self, addedFeatures):
         for featureID, feature in addedFeatures.iteritems():
-            QgsMessageLog.logMessage('Add feature with feature ID: ' + str(featureID), 'CartoDB Plugin', QgsMessageLog.INFO)
+            QgsMessageLog.logMessage('CartoDBLayer.py _addFeatures() featureID: ' + str(featureID), 'CartoDB Plugin', QgsMessageLog.INFO)
             sql = "INSERT INTO " + self._schema() + self.cartoTable + " ("
             addComma = False
 
@@ -331,7 +331,7 @@ class CartoDBLayer(QgsVectorLayer):
             res = self._updateSQL(sql, 'Some error ocurred inserting feature')
             if isinstance(res, dict) and res['total_rows'] == 1:
                 self.iface.messageBar().pushMessage('Info',
-                                                    'Feature inserted at CartoDB servers',
+                                                    'Feature inserted',
                                                     level=self.iface.messageBar().INFO, duration=10)
                 for f in nullableFields:
                     self._updateNullableFields(featureID, f, res['rows'][0][f])
@@ -344,7 +344,7 @@ class CartoDBLayer(QgsVectorLayer):
     def _deleteFeatures(self, deletedFeatureIds):
         provider = self.dataProvider()
         for featureID in deletedFeatureIds:
-            QgsMessageLog.logMessage('Delete feature with feature ID: ' + str(featureID), 'CartoDB Plugin', QgsMessageLog.INFO)
+            QgsMessageLog.logMessage('CartoDBLayer.py _deleteFeatures() featureID: ' + str(featureID), 'CartoDB Plugin', QgsMessageLog.INFO)
             request = QgsFeatureRequest().setFilterFid(featureID)
             try:
                 feature = provider.getFeatures(request).next()
@@ -353,7 +353,7 @@ class CartoDBLayer(QgsVectorLayer):
                 if isinstance(res, dict) and res['total_rows'] == 1:
                     self.iface.messageBar().pushMessage('Info',
                                                         'Feature with cartodb_id ' + str(feature['cartodb_id']) +
-                                                        ' was deleted from ' + str(self.cartoTable) + ' at CartoDB servers',
+                                                        ' was deleted from ' + str(self.cartoTable),
                                                         level=self.iface.messageBar().INFO, duration=10)
             except StopIteration:
                 self.iface.messageBar().pushMessage('Warning', 'Can\'t get feature from dataprovider with fid ' + str(featureID),
@@ -365,7 +365,7 @@ class CartoDBLayer(QgsVectorLayer):
         cl = CartoDBAPIKey(self._apiKey, self.user)
         try:
             res = cl.sql(sql, True, True)
-            QgsMessageLog.logMessage('Result: ' + str(res), 'CartoDB Plugin', QgsMessageLog.INFO)
+            QgsMessageLog.logMessage('CARTO API Result: ' + str(res), 'CartoDB Plugin', QgsMessageLog.INFO)
             return res
         except CartoDBException as e:
             QgsMessageLog.logMessage(errorMsg + ' - ' + str(e), 'CartoDB Plugin', QgsMessageLog.CRITICAL)
@@ -428,7 +428,7 @@ class CartoDBLayerWorker(QObject):
 
     @pyqtSlot(str)
     def _loadData(self, spatiaLite):
-        QgsMessageLog.logMessage('CartoDBLayer.py CartoDBLayerWorker _loadData() got data, loading a new CartoDBLayer')
+        QgsMessageLog.logMessage('CartoDBLayer.py CartoDBLayerWorker _loadData() got data, loading a new CartoDBLayer', 'CartoDB Plugin', QgsMessageLog.INFO)
 
         layer = CartoDBLayer(self.iface, self.tableName, self.dlg.currentUser, self.dlg.currentApiKey,
                              self.owner, self.sql, spatiaLite=spatiaLite, readonly=self.readonly, multiuser=self.multiuser)
@@ -436,8 +436,6 @@ class CartoDBLayerWorker(QObject):
 
     @pyqtSlot()
     def loadLayer(self):
-        # QgsMessageLog.logMessage('CartoDBLayer.py loadLayer() table=' + str(self.tableName))
-
         if self.sql is None:
             sql = 'SELECT * FROM ' + self.tableName
             if self.filterByExtent:
@@ -446,7 +444,7 @@ class CartoDBLayerWorker(QObject):
         else:
             sql = self.sql
 
-        QgsMessageLog.logMessage('CartoDBLayer.py loadLayer() sql=' + sql)
+        QgsMessageLog.logMessage('CartoDBLayer.py loadLayer() ' + sql, 'CartoDB Plugin', QgsMessageLog.INFO)
 
         cartoDBApi = CartoDBApi(self.dlg.currentUser, self.dlg.currentApiKey)
         cartoDBApi.fetchContent.connect(self._loadData)
@@ -458,7 +456,7 @@ class CartoDBLayerWorker(QObject):
     On worker has finished
     """
     def workerFinished(self, ret):
-        QgsMessageLog.logMessage('Task finished: ' + str(ret), 'CartoDB Plugin', QgsMessageLog.INFO)
+        QgsMessageLog.logMessage('CartoDBLayer.py workerFinished() ' + str(ret), 'CartoDB Plugin', QgsMessageLog.INFO)
         self.loop.exit()
 
     """

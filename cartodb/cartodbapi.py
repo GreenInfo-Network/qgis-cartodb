@@ -69,7 +69,7 @@ class CartoDBApi(QObject):
     def getUserTables(self, page=1, per_page=20, shared='yes', returnDict=True):
         self.returnDict = returnDict
         url = QUrl(self.apiUrl + "sql/?api_key={}&q={}".format(self.apiKey, "SELECT CDB_UserTables('all') AS tablename"))
-        QgsMessageLog.logMessage( "getUserTables, url=" + str(url) )
+        QgsMessageLog.logMessage( "getUserTables, url=" + str(url), 'CartoDB Plugin', QgsMessageLog.INFO)
         request = self._getRequest(url)
 
         reply = self.manager.get(request)
@@ -226,9 +226,9 @@ class CartoDBApi(QObject):
         response = str(reply.readAll())
 
         if reply.error():
-            QgsMessageLog.logMessage('cartodbapi.py returnFetchContent() Error: ' + str(reply.error()))
+            QgsMessageLog.logMessage('cartodbapi.py returnFetchContent() Error: ' + str(reply.error()), 'CartoDB Plugin', QgsMessageLog.INFO)
         else:
-            QgsMessageLog.logMessage('cartodbapi.py returnFetchContent() Response:' + response)
+            QgsMessageLog.logMessage('cartodbapi.py returnFetchContent() Response:' + response, 'CartoDB Plugin', QgsMessageLog.INFO)
 
         if reply.rawHeader('Location') == 'http://cartodb.com/noneuser.html' or \
            reply.rawHeader('Location') == 'http://carto.com/noneuser.html':

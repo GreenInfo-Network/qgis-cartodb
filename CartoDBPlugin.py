@@ -239,7 +239,7 @@ class CartoDBPlugin(QObject):
         result = dlg.exec_()
         if result == 1 and dlg.currentUser is not None and dlg.currentApiKey is not None:
             sql = dlg.getQuery()
-            QgsMessageLog.logMessage('CartoDBPlugin.py addSQL() ' + sql)
+            QgsMessageLog.logMessage('CartoDBPlugin.py addSQL() ' + sql, 'CartoDB Plugin', QgsMessageLog.INFO)
             progressMessageBar, progress = self.addLoadingMsg(1)
             layer = CartoDBLayer(self.iface, 'SQLQuery', dlg.currentUser, dlg.currentApiKey, sql=sql, isSQL=True)
             QgsMapLayerRegistry.instance().addMapLayer(layer)

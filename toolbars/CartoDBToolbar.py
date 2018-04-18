@@ -76,7 +76,7 @@ class CartoDBToolbar(QWidget):
 
     @pyqtSlot(dict)
     def cbUserData(self, data):
-        # QgsMessageLog.logMessage('CartoDBToolbar.py cbUserData'  + str(data) )
+        # QgsMessageLog.logMessage('CartoDBToolbar.py cbUserData'  + str(data), 'CartoDB Plugin', QgsMessageLog.INFO)
         if 'error' in data:
             # TODO Create image for error
             self.nameLB.setText("<html><head/><body><p><span style=\" text-decoration: underline; color:red;\">CARTO: error, check settings</span></p></body></html>")

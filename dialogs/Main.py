@@ -71,7 +71,7 @@ class CartoDBPluginDialog(CartoDBUserDataDialog):
     @pyqtSlot()
     def connect(self):
         # Get tables from CartoDB.
-        QgsMessageLog.logMessage('Main.py connect() entered')
+        QgsMessageLog.logMessage('Main.py connect() entered', 'CartoDB Plugin', QgsMessageLog.INFO)
         self.tablesPage = 1
         self.noLoadTables = False
         self.ui.searchTX.setText('')
@@ -113,7 +113,7 @@ class CartoDBPluginDialog(CartoDBUserDataDialog):
             self.ui.tablesList.setItemWidget(item, widget)
 
     def getTables(self, cartodbUser, apiKey, multiuser=False):
-        QgsMessageLog.logMessage('Main.py getTables() entered')
+        QgsMessageLog.logMessage('Main.py getTables() entered', 'CartoDB Plugin', QgsMessageLog.INFO)
         cartoDBApi = CartoDBApi(cartodbUser, apiKey, multiuser)
         cartoDBApi.fetchContent.connect(self.cbTables)
         cartoDBApi.error.connect(self.error)
@@ -122,13 +122,11 @@ class CartoDBPluginDialog(CartoDBUserDataDialog):
 
     @pyqtSlot(dict)
     def cbTables(self, data):
-        QgsMessageLog.logMessage('Main.py cbTables() '  + str(data) )
+        QgsMessageLog.logMessage('Main.py cbTables() '  + str(data), 'CartoDB Plugin', QgsMessageLog.INFO)
         if 'error' in data:
             return
 
-        # gda
         data['visualizations'] = [ { 'name': r['tablename'] } for r in data['rows'] ]
-        QgsMessageLog.logMessage(str(data['visualizations']))
 
         self.totalTables = len(data['visualizations'])
         self.totalShared = 0

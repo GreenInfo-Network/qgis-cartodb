@@ -66,7 +66,7 @@ class CartoDBUserDataDialog(QDialog):
 
     @pyqtSlot(dict)
     def cbUserData(self, data):
-        QgsMessageLog.logMessage('GDA UserData.py cbUserData' + str(data) )
+        QgsMessageLog.logMessage('UserData.py cbUserData' + str(data), 'CartoDB Plugin', QgsMessageLog.INFO)
         self.currentUserData = data
 
         """

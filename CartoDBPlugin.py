@@ -146,6 +146,9 @@ class CartoDBPlugin(QObject):
         self.iface.webMenu().removeAction(self._cdbMenu.menuAction())
         self.iface.removeWebToolBarIcon(self._toolbarAction)
 
+        self.iface.layerToolBar().removeAction(self._mainAction)
+        self.iface.layerToolBar().removeAction(self._addSQLAction)
+
         # Unregister plugin layer type
         QgsPluginLayerRegistry.instance().removePluginLayerType(CartoDBPluginLayer.LAYER_TYPE)
 
@@ -236,8 +239,8 @@ class CartoDBPlugin(QObject):
         result = dlg.exec_()
         if result == 1 and dlg.currentUser is not None and dlg.currentApiKey is not None:
             sql = dlg.getQuery()
+            QgsMessageLog.logMessage('CartoDBPlugin.py addSQL() ' + sql)
             progressMessageBar, progress = self.addLoadingMsg(1)
-            QgsMessageLog.logMessage('SQL: ' + sql, 'CartoDB Plugin', QgsMessageLog.INFO)
             layer = CartoDBLayer(self.iface, 'SQLQuery', dlg.currentUser, dlg.currentApiKey, sql=sql, isSQL=True)
             QgsMapLayerRegistry.instance().addMapLayer(layer)
             self.layers.append(layer)
@@ -262,7 +265,7 @@ class CartoDBPlugin(QObject):
         dlg.show()
         dlg.exec_()
 
-    def addLoadingMsg(self, countLayers, barText='Downloading datasets'):
+    def addLoadingMsg(self, countLayers, barText='CARTO downloading'):
         barText = self.tr(barText)
         progressMessageBar = self.iface.messageBar().createMessage(barText, '0/' + str(countLayers))
         progress = QProgressBar()

@@ -79,6 +79,8 @@ class CartoDBLayer(QgsVectorLayer):
         self.beforeCommitChanges.connect(self._beforeCommitChanges)
 
     def _loadData(self, sql, geoJSON=None, spatiaLite=None):
+        QgsMessageLog.logMessage('CartoDBLayer.py CartoDBLayer _loadData() got SQL: ' + sql)
+
         readonly = True
         if spatiaLite is None:
             if geoJSON is None:
@@ -426,7 +428,7 @@ class CartoDBLayerWorker(QObject):
 
     @pyqtSlot(str)
     def _loadData(self, spatiaLite):
-        QgsMessageLog.logMessage('CartoDBLayer.py _loadData() got data, loading a new CartoDBLayer')
+        QgsMessageLog.logMessage('CartoDBLayer.py CartoDBLayerWorker _loadData() got data, loading a new CartoDBLayer')
 
         layer = CartoDBLayer(self.iface, self.tableName, self.dlg.currentUser, self.dlg.currentApiKey,
                              self.owner, self.sql, spatiaLite=spatiaLite, readonly=self.readonly, multiuser=self.multiuser)

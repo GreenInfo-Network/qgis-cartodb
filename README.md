@@ -32,3 +32,11 @@ On Windows, the QGIS plugin folder would be `C:\Users\YOUR_USER_NAME\.qgis2\pyth
 Copy the development into the QGIS plugins directory, overwriting existing files. Yes, the whole repository including the build output.
 
 Then reload the plugin, by closing QGIS and starting it again. Or, I recommend the *Plugin Reloader* plugin for QGIS. This adds a button to your toolbar, which will unload a plugin and reload it again. This saves a lot of time closing and re-opening QGIS.
+
+### Deploying It
+
+Have the client install the existing *CartoDB* plugin in QGIS.
+
+Then, send them the ZIP file of the updated version. Have them unpack it and move the files into place, overwriting the version they have in place. They should then restart QGIS.
+
+An immediately-obvious sign that the plugin is our version asnd not the non-functional stock version, is the CARTO message (their username) or en error message (instead of just "error" in red).

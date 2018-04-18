@@ -426,19 +426,25 @@ class CartoDBLayerWorker(QObject):
 
     @pyqtSlot(str)
     def _loadData(self, spatiaLite):
+        QgsMessageLog.logMessage('CartoDBLayer.py _loadData() got data, loading a new CartoDBLayer')
+
         layer = CartoDBLayer(self.iface, self.tableName, self.dlg.currentUser, self.dlg.currentApiKey,
                              self.owner, self.sql, spatiaLite=spatiaLite, readonly=self.readonly, multiuser=self.multiuser)
         self.finished.emit(layer)
 
     @pyqtSlot()
     def loadLayer(self):
+        # QgsMessageLog.logMessage('CartoDBLayer.py loadLayer() table=' + str(self.tableName))
+
         if self.sql is None:
-            sql = 'SELECT * FROM ' + ((self.owner + '.') if self.owner != self.dlg.currentUser else '') + self.tableName
+            sql = 'SELECT * FROM ' + self.tableName
             if self.filterByExtent:
                 extent = self.iface.mapCanvas().extent()
                 sql = sql + " WHERE ST_Intersects(ST_GeometryFromText('{}', 4326), the_geom)".format(extent.asWktPolygon())
         else:
             sql = self.sql
+
+        QgsMessageLog.logMessage('CartoDBLayer.py loadLayer() sql=' + sql)
 
         cartoDBApi = CartoDBApi(self.dlg.currentUser, self.dlg.currentApiKey)
         cartoDBApi.fetchContent.connect(self._loadData)
@@ -450,7 +456,7 @@ class CartoDBLayerWorker(QObject):
     On worker has finished
     """
     def workerFinished(self, ret):
-        QgsMessageLog.logMessage('Task finished:\n' + str(ret), 'CartoDB Plugin', QgsMessageLog.INFO)
+        QgsMessageLog.logMessage('Task finished: ' + str(ret), 'CartoDB Plugin', QgsMessageLog.INFO)
         self.loop.exit()
 
     """

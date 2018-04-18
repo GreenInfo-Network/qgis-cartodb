@@ -31,6 +31,8 @@ from QgisCartoDB.widgets import CartoDBDatasetsListItem
 
 import QgisCartoDB.resources
 
+from qgis.core import QgsMessageLog
+
 import copy
 import json
 
@@ -69,6 +71,7 @@ class CartoDBPluginDialog(CartoDBUserDataDialog):
     @pyqtSlot()
     def connect(self):
         # Get tables from CartoDB.
+        QgsMessageLog.logMessage('Main.py connect() entered')
         self.tablesPage = 1
         self.noLoadTables = False
         self.ui.searchTX.setText('')
@@ -87,14 +90,10 @@ class CartoDBPluginDialog(CartoDBUserDataDialog):
         for visualization in visualizations:
             item = QListWidgetItem(self.ui.tablesList)
 
-            owner = None
-            owner = visualization['permission']['owner']['username']
-
-            widget = CartoDBDatasetsListItem(
-                visualization['name'], owner, visualization['table']['size'], visualization['table']['row_count'],
-                shared=(owner != self.currentUser), multiuser=self.currentMultiuser)
+            widget = CartoDBDatasetsListItem(visualization['name'])
             # item.setText(visualization['name'])
             readonly = False
+            """
             # qDebug('Vis:' + json.dumps(visualization, sort_keys=True, indent=2, separators=(',', ': ')))
             if visualization['permission'] is not None and owner != self.currentUser and \
                visualization['permission']['acl'] is not None:
@@ -103,6 +102,7 @@ class CartoDBPluginDialog(CartoDBUserDataDialog):
                        acl['access'] == 'r':
                         readonly = True
                         break
+            """
 
             widget.readonly = readonly
             if readonly:
@@ -113,20 +113,25 @@ class CartoDBPluginDialog(CartoDBUserDataDialog):
             self.ui.tablesList.setItemWidget(item, widget)
 
     def getTables(self, cartodbUser, apiKey, multiuser=False):
+        QgsMessageLog.logMessage('Main.py getTables() entered')
         cartoDBApi = CartoDBApi(cartodbUser, apiKey, multiuser)
         cartoDBApi.fetchContent.connect(self.cbTables)
         cartoDBApi.error.connect(self.error)
         self.isLoadingTables = True
-        # cartoDBApi.getUserTables(self.tablesPage)
         cartoDBApi.getUserTables(1, 100000)
 
     @pyqtSlot(dict)
     def cbTables(self, data):
+        QgsMessageLog.logMessage('Main.py cbTables() '  + str(data) )
         if 'error' in data:
             return
 
-        self.totalTables = data['total_user_entries']
-        self.totalShared = data['total_shared']
+        # gda
+        data['visualizations'] = [ { 'name': r['tablename'] } for r in data['rows'] ]
+        QgsMessageLog.logMessage(str(data['visualizations']))
+
+        self.totalTables = len(data['visualizations'])
+        self.totalShared = 0
 
         if len(data['visualizations']) == 0:
             self.noLoadTables = True

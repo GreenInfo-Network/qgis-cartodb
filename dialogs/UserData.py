@@ -49,10 +49,12 @@ class CartoDBUserDataDialog(QDialog):
         self.getUserData(self.currentUser, self.currentApiKey, self.currentMultiuser)
 
     def getUserData(self, cartodbUser, apiKey, multiuser=False):
+        """
         if self.toolbar.avatarImage is not None:
             pixMap = QPixmap.fromImage(self.toolbar.avatarImage).scaled(self.ui.avatarLB.size(), Qt.KeepAspectRatio)
             self.ui.avatarLB.setPixmap(pixMap)
             self.ui.avatarLB.show()
+        """
 
         if self.toolbar.currentUserData is not None:
             self.currentUserData = self.toolbar.currentUserData
@@ -64,8 +66,10 @@ class CartoDBUserDataDialog(QDialog):
 
     @pyqtSlot(dict)
     def cbUserData(self, data):
+        QgsMessageLog.logMessage('GDA UserData.py cbUserData' + str(data) )
         self.currentUserData = data
 
+        """
         if self.toolbar.avatarImage is None:
             manager = QNetworkAccessManager()
             manager.finished.connect(self.returnAvatar)
@@ -81,10 +85,12 @@ class CartoDBUserDataDialog(QDialog):
             loop = QEventLoop()
             reply.finished.connect(loop.exit)
             loop.exec_()
+        """
 
         self.setUpUserData()
 
     def setUpUserData(self):
+        """
         usedQuota = (float(self.currentUserData['quota_in_bytes']) - float(self.currentUserData['remaining_byte_quota']))/1024/1024
         quota = float(self.currentUserData['quota_in_bytes'])/1024/1024
 
@@ -99,7 +105,11 @@ class CartoDBUserDataDialog(QDialog):
             quota = "{:.2f}".format(quota/1024) + ' GB'
         else:
             quota = "{:.2f}".format(quota) + ' MB'
+        """
 
+        self.ui.nameLB.setText(self.currentUserData['username'])
+
+        """
         if self.totalTables is None or self.totalShared is None:
             self.ui.nameLB.setText(
                 QApplication.translate('CartoDBPlugin', '{}, using {} of {}')
@@ -108,7 +118,9 @@ class CartoDBUserDataDialog(QDialog):
             self.ui.nameLB.setText(
                 QApplication.translate('CartoDBPlugin', '{}, using {} of {}, {} tables, {} shared')
                             .format(self.currentUserData['username'], usedQuota, quota, self.totalTables, self.totalShared))
+        """
 
+    """
     def returnAvatar(self, reply):
         imageReader = QImageReader(reply)
         image = imageReader.read()
@@ -121,3 +133,4 @@ class CartoDBUserDataDialog(QDialog):
         else:
             # TODO Put default image if not load from URL.
             pass
+    """

@@ -75,12 +75,12 @@ class CartoDBDatasetsListItem(QWidget):
         self.ui.sizeTX.setStyleSheet('color: ' + color)
 
     def clone(self):
-        return CartoDBDatasetsListItem(self.tableName, self.tableOwner, self.size, self.rows)
+        return CartoDBDatasetsListItem(self.tableName)
 
 
 class CartoDBLayerListItem(CartoDBDatasetsListItem):
     def __init__(self, tableName=None, layer=None, size=None, rows=None):
-        CartoDBDatasetsListItem.__init__(self, tableName, None, size, rows)
+        CartoDBDatasetsListItem.__init__(self, tableName, None, None, None)
 
         '''
         self.ui.statusLB = QLabel(self)

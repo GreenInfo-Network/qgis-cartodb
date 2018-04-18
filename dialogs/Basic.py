@@ -45,16 +45,12 @@ class CartoDBPluginUserDialog(QDialog):
         self.getUserData(self.currentUser, self.currentApiKey, self.currentMultiuser)
 
     def getUserData(self, cartodbUser, apiKey, multiuser=False):
-        if self.toolbar.avatarImage is not None:
-            pixMap = QPixmap.fromImage(self.toolbar.avatarImage).scaled(self.ui.avatarLB.size(), Qt.KeepAspectRatio)
-            self.ui.avatarLB.setPixmap(pixMap)
-            self.ui.avatarLB.show()
-
         if self.toolbar.currentUserData is not None:
             self.currentUserData = self.toolbar.currentUserData
             self.setUpUserData()
 
     def setUpUserData(self):
+        """
         usedQuota = (float(self.currentUserData['quota_in_bytes']) - float(self.currentUserData['remaining_byte_quota']))/1024/1024
         quota = float(self.currentUserData['quota_in_bytes'])/1024/1024
 
@@ -69,9 +65,13 @@ class CartoDBPluginUserDialog(QDialog):
             quota = "{:.2f}".format(quota/1024) + ' GB'
         else:
             quota = "{:.2f}".format(quota) + ' MB'
+        """
 
         self.ui.nameLB.setText(self.currentUserData['username'])
+
+        """
         if hasattr(self.ui, 'quotaLB'):
             self.ui.quotaLB.setText(
                 QApplication.translate('CartoDBPlugin', 'Using {} of {}')
                             .format(usedQuota, quota))
+        """

@@ -1,6 +1,6 @@
 from PyQt4.QtCore import QObject, QUrl, qDebug, QEventLoop, QFile, QFileInfo, QIODevice, pyqtSignal
-
 from PyQt4.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply, QHttpMultiPart, QHttpPart
+from qgis.core import QgsMessageLog
 
 import tempfile
 import urllib
@@ -22,7 +22,7 @@ class CartoDBApi(QObject):
         self.apiKey = apiKey
         self.cartodbUser = cartodbUser
         self.hostname = hostname
-        self.apiUrl = "https://{}.{}/api/v1/".format(cartodbUser, hostname)
+        self.apiUrl = "https://{}.{}/api/v2/".format(cartodbUser, hostname)
         self.returnDict = True
 
         self.manager = QNetworkAccessManager()
@@ -52,8 +52,11 @@ class CartoDBApi(QObject):
         return multiPart
 
     def getUserDetails(self, returnDict=True):
+        # old V1 would fetch avatar image etc; that's gone in V2 but we still need to confirm our API key & username
+        # this API query just hands back our own username that we sent... but does confirm that the API replied
         self.returnDict = returnDict
-        url = QUrl(self.apiUrl + "users/{}/?api_key={}".format(self.cartodbUser, self.apiKey))
+        sql = "SELECT '{}' AS username".format(self.cartodbUser)
+        url = QUrl(self.apiUrl + "sql/?api_key={}&q={}".format(self.apiKey, sql))
         request = self._getRequest(url)
 
         reply = self.manager.get(request)
@@ -65,21 +68,8 @@ class CartoDBApi(QObject):
 
     def getUserTables(self, page=1, per_page=20, shared='yes', returnDict=True):
         self.returnDict = returnDict
-        payload = {
-            'tag_name': '',
-            'q': '',
-            'page': page,
-            'type': '',
-            'exclude_shared': 'false',
-            'per_page': per_page,
-            'tags': '',
-            'shared': shared,
-            'locked': 'false',
-            'only_liked': 'false',
-            'order': 'name',
-            'types': 'table'
-        }
-        url = QUrl(self.apiUrl + "viz?api_key={}&{}".format(self.apiKey, urllib.urlencode(payload)))
+        url = QUrl(self.apiUrl + "sql/?api_key={}&q={}".format(self.apiKey, "SELECT CDB_UserTables('all') AS tablename"))
+        QgsMessageLog.logMessage( "getUserTables, url=" + str(url) )
         request = self._getRequest(url)
 
         reply = self.manager.get(request)
@@ -234,9 +224,11 @@ class CartoDBApi(QObject):
 
     def returnFetchContent(self, reply):
         response = str(reply.readAll())
-        # qDebug('Response:' + response)
-        # qDebug('Error: ' + str(reply.error()))
-        # qDebug('Status: ' + str(reply.rawHeader('Location')))
+
+        if reply.error():
+            QgsMessageLog.logMessage('cartodbapi.py returnFetchContent() Error: ' + str(reply.error()))
+        else:
+            QgsMessageLog.logMessage('cartodbapi.py returnFetchContent() Response:' + response)
 
         if reply.rawHeader('Location') == 'http://cartodb.com/noneuser.html' or \
            reply.rawHeader('Location') == 'http://carto.com/noneuser.html':

@@ -26,6 +26,8 @@ from PyQt4.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkRepl
 from QgisCartoDB.cartodb import CartoDBApi
 from QgisCartoDB.utils import CartoDBPluginWorker
 
+from qgis.core import QgsMessageLog
+
 
 class CartoDBToolbar(QWidget):
     error = pyqtSignal(object)
@@ -74,44 +76,18 @@ class CartoDBToolbar(QWidget):
 
     @pyqtSlot(dict)
     def cbUserData(self, data):
+        # QgsMessageLog.logMessage('CartoDBToolbar.py cbUserData'  + str(data) )
         if 'error' in data:
             # TODO Create image for error
-            self.nameLB.setText("<html><head/><body><p><span style=\" text-decoration: underline; color:red;\">error</span></p></body></html>")
+            self.nameLB.setText("<html><head/><body><p><span style=\" text-decoration: underline; color:red;\">CARTO: error, check settings</span></p></body></html>")
             self.error.emit(data['error'])
             return
 
-        self.currentUserData = data
-        self.settings.setValue('/CartoDBPlugin/selected', self.currentUser)
-        manager = QNetworkAccessManager()
-        manager.finished.connect(self.returnAvatar)
+        # save our user info
+        self.currentUserData = data['rows'][0]
 
-        if 's3.amazonaws.com' in data['avatar_url']:
-            imageUrl = QUrl(data['avatar_url'])
-        else:
-            imageUrl = QUrl('http:' + data['avatar_url'])
-
-        request = QNetworkRequest(imageUrl)
-        request.setRawHeader('User-Agent', 'QGIS 2.x')
-        reply = manager.get(request)
-        loop = QEventLoop()
-        reply.finished.connect(loop.exit)
-        loop.exec_()
-
-    def returnAvatar(self, reply):
-        imageReader = QImageReader(reply)
-        self.avatarImage = imageReader.read()
-
-        lbl = self.avatarLB
-        if reply.error() == QNetworkReply.NoError:
-            pixMap = QPixmap.fromImage(self.avatarImage).scaled(lbl.size(), Qt.KeepAspectRatio)
-            lbl.setPixmap(pixMap)
-            lbl.show()
-        else:
-            # TODO Put default image if not load from URL.
-            pass
-
-        self.nameLB.setText("<html><head/><body><p><span style=\" text-decoration: underline; color:#00557f;\">" + self.currentUser + "</span></p></body></html>")
-        # self.setUpUserData()
+        # fill in the toolbar to confirm our username
+        self.nameLB.setText("<html><head/><body><p>CARTO: {}</p></body></html>".format(self.currentUserData['username']))
 
     @pyqtSlot()
     def connectCartoDB(self):

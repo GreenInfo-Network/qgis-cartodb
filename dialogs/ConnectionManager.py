@@ -20,7 +20,6 @@ email                : michaelsalgado@gkudos.com, info@gkudos.com
 """
 from PyQt4.QtCore import QSettings, pyqtSignal
 from PyQt4.QtGui import QDialog, QMessageBox, QApplication
-
 from qgis.core import QgsMessageLog
 
 from QgisCartoDB.dialogs.NewConnection import CartoDBNewConnectionDialog

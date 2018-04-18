@@ -30,6 +30,7 @@
      </property>
     </widget>
    </item>
+   <!--
    <item>
     <widget class="QLabel" name="rowsTX">
      <property name="maximumSize">
@@ -62,6 +63,7 @@
      </property>
     </widget>
    </item>
+   -->
   </layout>
  </widget>
  <resources/>

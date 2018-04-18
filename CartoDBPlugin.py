@@ -80,8 +80,8 @@ class CartoDBPlugin(QObject):
 
         self._cdbMenu = None
         self._mainAction = None
-        self._loadDataAction = None
-        self._createVizAction = None
+        # self._loadDataAction = None
+        # self._createVizAction = None
         self._addSQLAction = None
         self.toolbar = CartoDBToolbar()
         self._toolbarAction = None
@@ -92,10 +92,10 @@ class CartoDBPlugin(QObject):
         self._cdbMenu.setIcon(QIcon(":/plugins/qgis-cartodb/images/icon.png"))
         self._mainAction = QAction(self.tr('Add CartoDB Layer'), self.iface.mainWindow())
         self._mainAction.setIcon(QIcon(":/plugins/qgis-cartodb/images/icons/add.png"))
-        self._loadDataAction = QAction(self.tr('Upload layers to CartoDB'), self.iface.mainWindow())
-        self._loadDataAction.setIcon(QIcon(":/plugins/qgis-cartodb/images/icons/upload.png"))
-        self._createVizAction = QAction(self.tr('Create New Map'), self.iface.mainWindow())
-        self._createVizAction.setIcon(QIcon(":/plugins/qgis-cartodb/images/icons/map.png"))
+        # self._loadDataAction = QAction(self.tr('Upload layers to CartoDB'), self.iface.mainWindow())
+        # self._loadDataAction.setIcon(QIcon(":/plugins/qgis-cartodb/images/icons/upload.png"))
+        # self._createVizAction = QAction(self.tr('Create New Map'), self.iface.mainWindow())
+        # self._createVizAction.setIcon(QIcon(":/plugins/qgis-cartodb/images/icons/map.png"))
         self._addSQLAction = QAction(self.tr('Add SQL CartoDB Layer'), self.iface.mainWindow())
         self._addSQLAction.setIcon(QIcon(":/plugins/qgis-cartodb/images/icons/sql.png"))
 
@@ -107,23 +107,23 @@ class CartoDBPlugin(QObject):
 
         if not self.toolbar.isCurrentUserValid():
             self._mainAction.setEnabled(False)
-            self._loadDataAction.setEnabled(False)
-            self._createVizAction.setEnabled(False)
+            # self._loadDataAction.setEnabled(False)
+            # self._createVizAction.setEnabled(False)
             self._addSQLAction.setEnabled(False)
 
         self._mainAction.triggered.connect(self.run)
-        self._loadDataAction.triggered.connect(self.upload)
-        self._createVizAction.triggered.connect(self.createNewMap)
+        # self._loadDataAction.triggered.connect(self.upload)
+        # self._createVizAction.triggered.connect(self.createNewMap)
         self._addSQLAction.triggered.connect(self.addSQL)
 
         self._cdbMenu.addAction(self._mainAction)
-        self._cdbMenu.addAction(self._loadDataAction)
-        self._cdbMenu.addAction(self._createVizAction)
+        # self._cdbMenu.addAction(self._loadDataAction)
+        # self._cdbMenu.addAction(self._createVizAction)
         self._cdbMenu.addAction(self._addSQLAction)
         self.iface.layerToolBar().addAction(self._mainAction)
         self.iface.addWebToolBarIcon(self._mainAction)
-        self.iface.addWebToolBarIcon(self._loadDataAction)
-        self.iface.addWebToolBarIcon(self._createVizAction)
+        # self.iface.addWebToolBarIcon(self._loadDataAction)
+        # self.iface.addWebToolBarIcon(self._createVizAction)
         self.iface.layerToolBar().addAction(self._addSQLAction)
         self.iface.addWebToolBarIcon(self._addSQLAction)
 
@@ -140,8 +140,8 @@ class CartoDBPlugin(QObject):
 
     def unload(self):
         self.iface.removeWebToolBarIcon(self._mainAction)
-        self.iface.removeWebToolBarIcon(self._loadDataAction)
-        self.iface.removeWebToolBarIcon(self._createVizAction)
+        # self.iface.removeWebToolBarIcon(self._loadDataAction)
+        # self.iface.removeWebToolBarIcon(self._createVizAction)
         self.iface.removeWebToolBarIcon(self._addSQLAction)
         self.iface.webMenu().removeAction(self._cdbMenu.menuAction())
         self.iface.removeWebToolBarIcon(self._toolbarAction)
@@ -162,8 +162,8 @@ class CartoDBPlugin(QObject):
         if result == 1 and dlg.currentUser is not None and dlg.currentApiKey is not None:
             self.toolbar.setUserCredentials(dlg.currentUser, dlg.currentApiKey, dlg.currentMultiuser)
             self._mainAction.setEnabled(True)
-            self._loadDataAction.setEnabled(True)
-            self._createVizAction.setEnabled(True)
+            # self._loadDataAction.setEnabled(True)
+            # self._createVizAction.setEnabled(True)
             self._addSQLAction.setEnabled(True)
 
     def connectionsNotFound(self):
@@ -176,8 +176,8 @@ class CartoDBPlugin(QObject):
 
     def toolbarError(self, error):
         self._mainAction.setEnabled(False)
-        self._loadDataAction.setEnabled(False)
-        self._createVizAction.setEnabled(False)
+        # self._loadDataAction.setEnabled(False)
+        # self._createVizAction.setEnabled(False)
         self._addSQLAction.setEnabled(False)
 
     def run(self):

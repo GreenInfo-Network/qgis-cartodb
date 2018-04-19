@@ -27,11 +27,11 @@ sudo apt-get install pyqt4-dev-tools qt4-designer
 
 ### Testing It
 
-On Windows, the QGIS plugin folder would be `C:\Users\YOUR_USER_NAME\.qgis2\python\plugins\QgisCartoDB`
-
 Copy the development into the QGIS plugins directory, overwriting existing files. Yes, the whole repository including the build output.
+* On Windows, the QGIS plugin folder would be `C:\Users\YOUR_USER_NAME\.qgis2\python\plugins\QgisCartoDB`
+* On Mac OSX, the QGIS plugin folder would be `~/.qgis2/python/plugins/QgisCartoDB`
 
-Then reload the plugin, by closing QGIS and starting it again. Or, I recommend the *Plugin Reloader* plugin for QGIS. This adds a button to your toolbar, which will unload a plugin and reload it again. This saves a lot of time closing and re-opening QGIS.
+Then reload the plugin, by closing QGIS and starting it again. Or, I recommend the *Plugin Reloader* plugin for QGIS. This adds a button to your toolbar, which will unload a plugin and reload it again. This saves a lot of time closing and re-opening QGIS. *Note that during development, the reloader may be less than perfect, particularly when debugging errors in CRUD operations. You may need to reload the CartoDB layer, or even quit QGIS entirely.*
 
 ### Deploying It
 
